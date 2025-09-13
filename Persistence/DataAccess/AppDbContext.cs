@@ -11,11 +11,15 @@ public class AppDbContext : DbContext
     
     public virtual DbSet<AdvertisingPlatformEntity> AdvertisingPlatforms { get; set; }
     
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseInMemoryDatabase("TestDatabase");
-        }
+        modelBuilder.Entity<AdvertisingPlatformEntity>()
+            .HasKey(e => e.Id);
+        
+        modelBuilder.Entity<AdvertisingPlatformEntity>()
+            .Property(e => e.Locations)
+            .HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
     }
 }
